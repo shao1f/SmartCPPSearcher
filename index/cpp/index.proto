@@ -1,0 +1,46 @@
+syntax="proto2";
+
+//命名空间
+package doc_index_proto;
+
+message Pair{
+    //分词结果的前闭后开区间
+    required uint32 beg = 1;
+    required uint32 end = 2;
+};
+
+message DocInfo{
+    //文章信息
+    required uint32 DocId = 1;
+    required string title = 2;
+    required string content = 3;
+    required string show_url = 4;
+    required string jump_url = 5;
+
+    //分词结果,用来做倒排
+    repeated Pair title_token = 6;//标题的分词结果
+    repeated Pair content_token = 7;//正文的分词结果
+};
+
+message Weight{
+    //权重
+    required uint32 doc_id = 1;//该词在哪些文章中出现
+    required int32 weight = 2;//词组的权重,可以简单统计词组出现的次数
+    required int32 first_pos = 3;
+};
+
+//倒排索引中的一个键值对
+message KwdInfo{
+    required string key = 1;
+    repeated Weight weight = 2;
+};
+
+//protobuf中没有hashtable结构,所以用repeated类似数组的方式存储键值对
+message Index{
+    //repeated属性的元素可以重复出现任意次
+    //核心操作有 _size 取重复元素的个数
+    //取某个元素 字段名+下标
+    //给字段中新增元素,add_ 前缀,注意add只是添加,并没有初始化
+    repeated DocInfo forward_index = 1;
+    repeated KwdInfo inverted_index = 2;
+};
